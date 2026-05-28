@@ -614,6 +614,7 @@ section { padding: 90px 0; }
   box-shadow: 0 4px 14px rgba(0,94,59,.25);
 }
 .service-icon svg { width: 28px; height: 28px; fill: var(--white); }
+.service-icon img { filter: brightness(0) invert(1); }
 
 .service-title {
   font-size: 1.1rem;
@@ -897,6 +898,7 @@ section { padding: 90px 0; }
   box-shadow: 0 4px 14px rgba(0,94,59,.25);
 }
 .service-full-icon svg { width: 28px; height: 28px; fill: var(--white); }
+.service-full-icon img { filter: brightness(0) invert(1); }
 .service-full-content h3 { font-size: 1.1rem; color: var(--text-dark); margin-bottom: 10px; }
 .service-full-content p  { font-size: .88rem; color: var(--text); line-height: 1.65; }
 
