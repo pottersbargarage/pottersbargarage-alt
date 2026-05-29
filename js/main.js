@@ -130,21 +130,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* ── Contact form – basic validation feedback ── */
+  /* ── Contact form – Formspree AJAX submission ── */
   const contactForm = document.querySelector('.contact-form');
   if (contactForm) {
     contactForm.addEventListener('submit', e => {
       e.preventDefault();
       const btn = contactForm.querySelector('button[type="submit"]');
-      btn.textContent = 'Message Sent!';
-      btn.style.background = '#007a4e';
+      const originalHTML = btn.innerHTML;
+
+      btn.textContent = 'Sending…';
       btn.disabled = true;
-      setTimeout(() => {
-        btn.textContent = 'Send Message';
-        btn.style.background = '';
+      btn.style.opacity = '.75';
+
+      fetch(contactForm.action, {
+        method: 'POST',
+        body: new FormData(contactForm),
+        headers: { 'Accept': 'application/json' }
+      })
+      .then(res => {
+        if (res.ok) {
+          btn.textContent = 'Message sent — we\'ll be in touch!';
+          btn.style.background = 'var(--green-mid)';
+          btn.style.opacity = '1';
+          contactForm.reset();
+          setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.background = '';
+            btn.disabled = false;
+          }, 5000);
+        } else {
+          return res.json().then(data => {
+            throw new Error(data.errors ? data.errors.map(err => err.message).join(', ') : 'Submission failed');
+          });
+        }
+      })
+      .catch(() => {
+        btn.textContent = 'Something went wrong — please call us on 01707 644 465';
+        btn.style.background = '#b91c1c';
+        btn.style.opacity = '1';
         btn.disabled = false;
-        contactForm.reset();
-      }, 3000);
+        setTimeout(() => {
+          btn.innerHTML = originalHTML;
+          btn.style.background = '';
+        }, 6000);
+      });
     });
   }
 
