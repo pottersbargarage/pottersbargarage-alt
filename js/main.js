@@ -2,6 +2,11 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
+  /* ── Copyright year ── */
+  document.querySelectorAll('[data-copyright-year]').forEach(el => {
+    el.textContent = new Date().getFullYear();
+  });
+
   /* ── Mobile nav toggle ── */
   const hamburger  = document.querySelector('.hamburger');
   const mobileNav  = document.querySelector('.mobile-nav');
