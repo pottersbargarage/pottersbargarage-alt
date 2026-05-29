@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicles for Sale — Potters Bar Garage</title>
+  <meta name="description" content="Cars and motorbikes for sale at Potters Bar Garage, Hertfordshire. All vehicles inspected and prepared in-house. Call 01707 644 465 to enquire.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+  <link rel="apple-touch-icon" href="images/favicon-180.png">
+
+  <style>
+    /* ---- Vehicle filter tabs ---- */
+    .vehicles-section { padding: 70px 0 90px; }
+
+    .vehicles-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+    }
+
+    .filter-tab {
+      padding: 9px 22px;
+      border-radius: 50px;
+      border: 2px solid var(--border);
+      background: var(--white);
+      color: var(--text);
+      font-family: inherit;
+      font-size: .85rem;
+      font-weight: 600;
+      letter-spacing: .03em;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .filter-tab:hover {
+      border-color: var(--green-primary);
+      color: var(--green-primary);
+    }
+
+    .filter-tab.active {
+      background: var(--green-primary);
+      border-color: var(--green-primary);
+      color: var(--white);
+    }
+
+    .vehicles-count {
+      font-size: .88rem;
+      color: var(--text);
+    }
+
+    .vehicles-count strong {
+      color: var(--text-dark);
+    }
+
+    /* ---- Vehicle grid ---- */
+    .vehicles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 28px;
+    }
+
+    /* ---- Vehicle card ---- */
+    .vehicle-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+
+    .vehicle-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .vehicle-img-wrap {
+      position: relative;
+      height: 210px;
+      background: var(--bg-light);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .vehicle-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .vehicle-img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--border);
+    }
+
+    .vehicle-img-placeholder svg {
+      width: 48px;
+      height: 48px;
+      opacity: .4;
+    }
+
+    .vehicle-type-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: var(--green-primary);
+      color: var(--white);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 50px;
+    }
+
+    .vehicle-sold-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0,0,0,.7);
+      color: var(--white);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 50px;
+    }
+
+    .vehicle-card.sold .vehicle-img-wrap img,
+    .vehicle-card.sold .vehicle-img-placeholder {
+      opacity: .55;
+    }
+
+    .vehicle-card-body {
+      padding: 20px 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .vehicle-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      line-height: 1.3;
+    }
+
+    .vehicle-meta {
+      display: flex;
+      gap: 16px;
+      font-size: .83rem;
+      color: var(--text);
+    }
+
+    .vehicle-meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .vehicle-meta svg {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+      stroke: var(--green-primary);
+    }
+
+    .vehicle-price {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--green-primary);
+      line-height: 1;
+    }
+
+    .vehicle-card.sold .vehicle-price {
+      color: var(--text);
+      text-decoration: line-through;
+      font-size: 1.1rem;
+    }
+
+    .vehicle-desc {
+      font-size: .87rem;
+      color: var(--text);
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .vehicle-enquire {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: 50px;
+      background: var(--gold);
+      color: var(--text-dark);
+      font-weight: 700;
+      font-size: .82rem;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      transition: background var(--transition);
+      margin-top: 4px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .vehicle-enquire:hover { background: var(--gold-dark); }
+
+    .vehicle-card.sold .vehicle-enquire {
+      background: var(--bg-light);
+      color: var(--text);
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* ---- States ---- */
+    .vehicles-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 70px 24px;
+      color: var(--text);
+    }
+
+    .vehicles-state svg {
+      width: 56px;
+      height: 56px;
+      stroke: var(--border);
+      margin: 0 auto 20px;
+      display: block;
+    }
+
+    .vehicles-state h3 {
+      color: var(--text-dark);
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+
+    .vehicles-state p {
+      max-width: 420px;
+      margin: 0 auto 24px;
+      font-size: .92rem;
+      line-height: 1.7;
+    }
+
+    /* ---- CTA strip ---- */
+    .vehicles-cta {
+      background: linear-gradient(135deg, var(--green-primary), var(--green-dark));
+      border-radius: var(--radius-lg);
+      padding: 48px 40px;
+      text-align: center;
+      margin-top: 64px;
+      color: var(--white);
+    }
+
+    .vehicles-cta h3 {
+      color: var(--white);
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .vehicles-cta p {
+      color: rgba(255,255,255,.75);
+      margin-bottom: 28px;
+      font-size: .95rem;
+    }
+
+    .vehicles-cta .cta-btns {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 600px) {
+      .vehicles-toolbar { flex-direction: column; align-items: flex-start; }
+      .vehicles-cta { padding: 36px 24px; }
+      .vehicles-cta h3 { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="container">
+      <div class="top-bar-left">
+        <span class="top-bar-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          Unit A, 12 Barnet Rd, Potters Bar, EN6 2QS
+        </span>
+        <span class="top-bar-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Mon–Fri 08:00–18:00 &nbsp;|&nbsp; Sat 08:00–13:00
+        </span>
+      </div>
+      <div class="top-bar-right">
+        <a href="tel:01707644465" class="top-bar-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.28-1.28a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          01707 644 465
+        </a>
+        <a href="mailto:info@pbgarage.co.uk" class="top-bar-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          info@pbgarage.co.uk
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="index.html" class="site-logo">
+          <img src="images/logo.png" alt="Potters Bar Garage" height="48" style="height:48px;width:auto;display:block;">
+        </a>
+        <nav class="primary-nav" aria-label="Primary navigation">
+          <span class="nav-item"><a href="index.html" class="nav-link">Home</a></span>
+          <span class="nav-item"><a href="about.html" class="nav-link">About</a></span>
+          <span class="nav-item">
+            <a href="services.html" class="nav-link">Services ▾</a>
+            <ul class="dropdown">
+              <li><a href="services.html#mot">MOT Testing</a></li>
+              <li><a href="services.html#servicing">Servicing</a></li>
+              <li><a href="services.html#diagnostics">Diagnostics</a></li>
+              <li><a href="services.html#brakes">Brakes</a></li>
+              <li><a href="services.html#batteries">Batteries</a></li>
+              <li><a href="services.html#aircon">Air Conditioning</a></li>
+              <li><a href="services.html#exhausts">Exhausts</a></li>
+              <li><a href="services.html#bodywork">Bodywork</a></li>
+              <li><a href="services.html#wheel-alignment">Wheel Alignment</a></li>
+              <li><a href="services.html#electric">Electric &amp; Hybrid</a></li>
+            </ul>
+          </span>
+          <span class="nav-item"><a href="vehicles.html" class="nav-link active">Vehicles for Sale</a></span>
+          <span class="nav-item"><a href="contact.html" class="nav-link">Contact</a></span>
+        </nav>
+        <div class="header-cta">
+          <a href="tel:01707644465" class="btn btn-green" style="padding:10px 20px;font-size:.82rem;">Call Now</a>
+          <a href="contact.html" class="btn btn-gold" style="padding:10px 20px;font-size:.82rem;">Book Appointment</a>
+        </div>
+        <button class="hamburger" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="services.html" class="mobile-services-toggle">Services</a>
+      <div class="mobile-nav-services">
+        <a href="services.html#mot">MOT Testing</a>
+        <a href="services.html#servicing">Servicing</a>
+        <a href="services.html#diagnostics">Diagnostics</a>
+        <a href="services.html#brakes">Brakes</a>
+        <a href="services.html#batteries">Batteries</a>
+        <a href="services.html#aircon">Air Conditioning</a>
+        <a href="services.html#exhausts">Exhausts</a>
+        <a href="services.html#bodywork">Bodywork</a>
+        <a href="services.html#wheel-alignment">Wheel Alignment</a>
+        <a href="services.html#electric">Electric &amp; Hybrid</a>
+      </div>
+      <a href="vehicles.html">Vehicles for Sale</a>
+      <a href="contact.html">Contact</a>
+      <div class="mobile-nav-cta"><a href="contact.html" class="btn btn-gold" style="display:inline-flex;">Book Appointment</a></div>
+    </nav>
+  </header>
+
+  <!-- Page Hero -->
+  <div class="page-hero">
+    <div class="container">
+      <nav class="breadcrumb"><a href="index.html">Home</a><span class="breadcrumb-sep">›</span><span>Vehicles for Sale</span></nav>
+      <h1>Vehicles for Sale</h1>
+      <p>Cars and motorbikes sourced, inspected, and prepared in-house by our team. All vehicles come fully checked before sale.</p>
+    </div>
+  </div>
+
+  <!-- Vehicles Section -->
+  <section class="vehicles-section">
+    <div class="container">
+
+      <div class="vehicles-toolbar">
+        <div class="filter-tabs" role="tablist" aria-label="Filter vehicles by type">
+          <button class="filter-tab active" data-filter="all" role="tab" aria-selected="true">All</button>
+          <button class="filter-tab" data-filter="Car" role="tab" aria-selected="false">Cars</button>
+          <button class="filter-tab" data-filter="Motorbike" role="tab" aria-selected="false">Motorbikes</button>
+        </div>
+        <span class="vehicles-count" id="vehicles-count" aria-live="polite"></span>
+      </div>
+
+      <div class="vehicles-grid" id="vehicles-grid">
+        <!-- Loading state -->
+        <div class="vehicles-state" id="loading-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+          <h3>Loading vehicles…</h3>
+          <p>Fetching the latest listings from our database.</p>
+        </div>
+      </div>
+
+      <!-- CTA strip -->
+      <div class="vehicles-cta">
+        <h3>Interested in a vehicle?</h3>
+        <p>Call us or send a message and we'll answer any questions, arrange a viewing, or hold a vehicle for you.</p>
+        <div class="cta-btns">
+          <a href="tel:01707644465" class="btn btn-gold">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.28-1.28a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            Call 01707 644 465
+          </a>
+          <a href="contact.html" class="btn btn-outline-white">Send a Message</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="footer-logo">
+            <img src="images/logo.png" alt="Potters Bar Garage" height="44" style="height:44px;width:auto;display:block;filter:brightness(0) invert(1);">
+          </a>
+          <p>A family-run garage in Potters Bar serving customers from across Hertfordshire, Enfield and North London.</p>
+          <div class="footer-social">
+            <a href="https://www.facebook.com/pottersbar.garage" class="social-btn" aria-label="Facebook" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+            </a>
+            <a href="https://maps.app.goo.gl/TgL2Riq4MoCbw6Hv9" class="social-btn" aria-label="Google" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="services.html#servicing">Servicing</a></li>
+            <li><a href="services.html#mot">MOT Testing</a></li>
+            <li><a href="services.html#diagnostics">Diagnostics</a></li>
+            <li><a href="services.html#brakes">Brakes</a></li>
+            <li><a href="services.html#aircon">Air Conditioning</a></li>
+            <li><a href="services.html#exhausts">Exhausts</a></li>
+            <li><a href="services.html#bodywork">Bodywork</a></li>
+            <li><a href="services.html#electric">Electric &amp; Hybrid</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="services.html">All Services</a></li>
+            <li><a href="vehicles.html">Vehicles for Sale</a></li>
+            <li><a href="contact.html">Book Appointment</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <div class="footer-contact-item"><svg viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>Unit A, 12 Barnet Rd, Potters Bar, EN6 2QS</span></div>
+          <div class="footer-contact-item"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.28-1.28a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg><a href="tel:01707644465">01707 644 465</a></div>
+          <div class="footer-contact-item"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:info@pbgarage.co.uk">info@pbgarage.co.uk</a></div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2025 Potters Bar Garage. All rights reserved.</span>
+        <span>Unit A, 12 Barnet Rd, Potters Bar, Hertfordshire, EN6 2QS</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+  (function () {
+
+    // ----------------------------------------------------------------
+    // CONFIG — replace with your published Google Sheet CSV URL
+    // See DATA-FROM-SHEETS.md for setup instructions
+    // ----------------------------------------------------------------
+    const SHEET_CSV_URL = 'YOUR_GOOGLE_SHEET_CSV_URL_HERE';
+
+    // ----------------------------------------------------------------
+    // CSV parser — handles quoted fields containing commas
+    // ----------------------------------------------------------------
+    function parseCSV(text) {
+      const lines = text.trim().split('\n');
+      const headers = splitCSVRow(lines[0]);
+      return lines.slice(1).map(line => {
+        const values = splitCSVRow(line);
+        return headers.reduce((obj, h, i) => {
+          obj[h.trim()] = (values[i] || '').trim();
+          return obj;
+        }, {});
+      });
+    }
+
+    function splitCSVRow(row) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < row.length; i++) {
+        const ch = row[i];
+        if (ch === '"') {
+          if (inQuotes && row[i + 1] === '"') { current += '"'; i++; }
+          else { inQuotes = !inQuotes; }
+        } else if (ch === ',' && !inQuotes) {
+          result.push(current);
+          current = '';
+        } else {
+          current += ch;
+        }
+      }
+      result.push(current);
+      return result;
+    }
+
+    // ----------------------------------------------------------------
+    // Rendering
+    // ----------------------------------------------------------------
+    const grid       = document.getElementById('vehicles-grid');
+    const countEl    = document.getElementById('vehicles-count');
+    let   allVehicles = [];
+    let   activeFilter = 'all';
+
+    function formatPrice(p) {
+      const n = parseInt(p.replace(/\D/g, ''), 10);
+      return isNaN(n) ? p : '£' + n.toLocaleString('en-GB');
+    }
+
+    function formatMileage(m) {
+      const n = parseInt(m.replace(/\D/g, ''), 10);
+      return isNaN(n) ? m : n.toLocaleString('en-GB') + ' miles';
+    }
+
+    function carIcon() {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 17H3a2 2 0 01-2-2v-4l2-5h14l2 5v4a2 2 0 01-2 2h-2"/>
+        <circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>
+      </svg>`;
+    }
+
+    function bikeIcon() {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/>
+        <path d="M12 17V7l-2 3h4M5 17l4-7h6l3 4"/>
+      </svg>`;
+    }
+
+    function renderCard(v) {
+      const sold = v.status && v.status.toLowerCase() === 'sold';
+      const title = [v.year, v.make, v.model].filter(Boolean).join(' ');
+      const isBike = v.type === 'Motorbike';
+
+      const imgHtml = v.image_url
+        ? `<img src="${v.image_url}" alt="${title}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=vehicle-img-placeholder>${isBike ? bikeIcon() : carIcon()}</div>'">`
+        : `<div class="vehicle-img-placeholder">${isBike ? bikeIcon() : carIcon()}</div>`;
+
+      return `
+        <div class="vehicle-card${sold ? ' sold' : ''}" data-type="${v.type}">
+          <div class="vehicle-img-wrap">
+            ${imgHtml}
+            <span class="vehicle-type-badge">${v.type || 'Vehicle'}</span>
+            ${sold ? '<span class="vehicle-sold-badge">Sold</span>' : ''}
+          </div>
+          <div class="vehicle-card-body">
+            <div class="vehicle-title">${title || 'Vehicle'}</div>
+            <div class="vehicle-meta">
+              ${v.mileage ? `<span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                ${formatMileage(v.mileage)}
+              </span>` : ''}
+            </div>
+            <div class="vehicle-price">${formatPrice(v.price)}</div>
+            ${v.description ? `<p class="vehicle-desc">${v.description}</p>` : ''}
+            ${sold
+              ? `<span class="vehicle-enquire">Sold</span>`
+              : `<a href="contact.html?vehicle=${encodeURIComponent(title)}" class="vehicle-enquire">
+                  Enquire
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>`
+            }
+          </div>
+        </div>`;
+    }
+
+    function renderEmpty(filter) {
+      const label = filter === 'Car' ? 'cars' : filter === 'Motorbike' ? 'motorbikes' : 'vehicles';
+      return `
+        <div class="vehicles-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 12h8M12 8v8"/>
+          </svg>
+          <h3>No ${label} listed at the moment</h3>
+          <p>We don't have any ${label} for sale right now, but stock changes regularly. Call us or leave your details and we'll get in touch when something suitable comes in.</p>
+          <a href="tel:01707644465" class="btn btn-green">Call 01707 644 465</a>
+        </div>`;
+    }
+
+    function renderError() {
+      return `
+        <div class="vehicles-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <h3>Couldn't load listings</h3>
+          <p>We're having trouble fetching the latest stock. Please call us directly and we'll tell you what's available.</p>
+          <a href="tel:01707644465" class="btn btn-green">Call 01707 644 465</a>
+        </div>`;
+    }
+
+    function applyFilter(filter) {
+      activeFilter = filter;
+      document.querySelectorAll('.filter-tab').forEach(btn => {
+        const isActive = btn.dataset.filter === filter;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-selected', isActive);
+      });
+
+      const filtered = filter === 'all'
+        ? allVehicles
+        : allVehicles.filter(v => v.type === filter);
+
+      const available = filtered.filter(v => !v.status || v.status.toLowerCase() !== 'sold');
+
+      if (filtered.length === 0) {
+        grid.innerHTML = renderEmpty(filter);
+        countEl.innerHTML = '';
+      } else {
+        grid.innerHTML = filtered.map(renderCard).join('');
+        countEl.innerHTML = `Showing <strong>${available.length}</strong> available`;
+      }
+    }
+
+    // ----------------------------------------------------------------
+    // Filter tab clicks
+    // ----------------------------------------------------------------
+    document.querySelectorAll('.filter-tab').forEach(btn => {
+      btn.addEventListener('click', () => applyFilter(btn.dataset.filter));
+    });
+
+    // ----------------------------------------------------------------
+    // Pre-fill contact form vehicle field from URL param
+    // ----------------------------------------------------------------
+    const params = new URLSearchParams(window.location.search);
+    const vehicleParam = params.get('vehicle');
+    if (vehicleParam) {
+      // Passes the vehicle name through to the contact page message field
+      // (contact.html can read this if wired up; harmless otherwise)
+    }
+
+    // ----------------------------------------------------------------
+    // Fetch & parse
+    // ----------------------------------------------------------------
+    if (SHEET_CSV_URL === 'YOUR_GOOGLE_SHEET_CSV_URL_HERE') {
+      // No sheet configured yet — show empty state immediately
+      grid.innerHTML = renderEmpty('all');
+      countEl.innerHTML = '';
+    } else {
+      fetch(SHEET_CSV_URL)
+        .then(res => {
+          if (!res.ok) throw new Error('Network response not OK');
+          return res.text();
+        })
+        .then(text => {
+          allVehicles = parseCSV(text).filter(v => v.type === 'Car' || v.type === 'Motorbike');
+          applyFilter('all');
+        })
+        .catch(() => {
+          grid.innerHTML = renderError();
+          countEl.innerHTML = '';
+        });
+    }
+
+  })();
+  </script>
+
+</body>
+</html>

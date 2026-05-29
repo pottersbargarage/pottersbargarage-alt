@@ -68,6 +68,7 @@
               <li><a href="services.html#electric">Electric &amp; Hybrid</a></li>
             </ul>
           </span>
+          <span class="nav-item"><a href="vehicles.html" class="nav-link">Vehicles for Sale</a></span>
           <span class="nav-item"><a href="contact.html" class="nav-link active">Contact</a></span>
         </nav>
         <div class="header-cta">
@@ -91,6 +92,7 @@
         <a href="services.html#bodywork">Bodywork</a>
         <a href="services.html#electric">Electric &amp; Hybrid</a>
       </div>
+      <a href="vehicles.html">Vehicles for Sale</a>
       <a href="contact.html">Contact</a>
       <div class="mobile-nav-cta"><a href="#book" class="btn btn-gold" style="display:inline-flex;">Book Appointment</a></div>
     </nav>
@@ -304,5 +306,24 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script>
+    // Pre-fill message when arriving from a vehicle enquiry link (?vehicle=Ford+Focus+2019)
+    (function () {
+      const params  = new URLSearchParams(window.location.search);
+      const vehicle = params.get('vehicle');
+      if (!vehicle) return;
+
+      const textarea = document.getElementById('message');
+      if (textarea && !textarea.value) {
+        textarea.value = 'I am enquiring about the ' + vehicle + ' listed on your website. Please could you provide more information?';
+      }
+
+      // Scroll the form into view and give the first empty required field focus
+      const form = document.querySelector('.contact-form');
+      if (form) {
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    })();
+  </script>
 </body>
 </html>
