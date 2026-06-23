@@ -498,10 +498,12 @@
   (function () {
 
     // ----------------------------------------------------------------
-    // CONFIG — replace with your published Google Sheet CSV URL
-    // See DATA-FROM-SHEETS.md for setup instructions
+    // CONFIG
     // ----------------------------------------------------------------
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTyE89umA6Ug37D0B4I5ev9YRsgnnz1FhtitsSsk9zhlPJNmtKFZCy6gH6w_bk0gjw2se0FlFDsJXYz/pub?gid=0&single=true&output=csv';
+
+    // Number of columns in the vehicle grid (2 or 4 recommended)
+    const GRID_COLUMNS = 2;
 
     // ----------------------------------------------------------------
     // CSV parser — handles quoted fields containing commas
@@ -576,7 +578,7 @@
       const isBike = v.type === 'Motorbike';
 
       const imgHtml = v.image_url
-        ? `<img src="${v.image_url}" alt="${title}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=vehicle-img-placeholder>${isBike ? bikeIcon() : carIcon()}</div>'">`
+        ? `<img src="${v.image_url}" alt="${title}" loading="lazy">`
         : `<div class="vehicle-img-placeholder">${isBike ? bikeIcon() : carIcon()}</div>`;
 
       return `
@@ -653,8 +655,20 @@
         grid.innerHTML = renderEmpty(filter);
         countEl.innerHTML = '';
       } else {
+        grid.style.gridTemplateColumns = `repeat(${GRID_COLUMNS}, 1fr)`;
         grid.innerHTML = filtered.map(renderCard).join('');
         countEl.innerHTML = `Showing <strong>${available.length}</strong> available`;
+
+        // Attach image error handlers — inline onerror can't safely embed SVG strings
+        grid.querySelectorAll('.vehicle-img-wrap img').forEach(img => {
+          img.addEventListener('error', function () {
+            const isBike = this.closest('.vehicle-card').dataset.type === 'Motorbike';
+            const placeholder = document.createElement('div');
+            placeholder.className = 'vehicle-img-placeholder';
+            placeholder.innerHTML = isBike ? bikeIcon() : carIcon();
+            this.replaceWith(placeholder);
+          });
+        });
       }
     }
 
