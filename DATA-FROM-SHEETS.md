@@ -40,9 +40,10 @@ Create a sheet with the following columns (exact header names matter):
 
 Google Sheets cannot host images directly. Options in rough order of simplicity:
 
-1. **Google Drive** — Upload the image, right-click → Share → Anyone with the link, then convert the share URL:
+1. **Google Drive** — Upload the image, right-click → Share → Anyone with the link, then use this URL format:
    - Share URL: `https://drive.google.com/file/d/FILE_ID/view`
-   - Direct image URL: `https://drive.google.com/uc?export=view&id=FILE_ID`
+   - **Correct image URL: `https://lh3.googleusercontent.com/d/FILE_ID`**
+   - ⚠️ Do NOT use `https://drive.google.com/uc?export=view&id=FILE_ID` — Google now blocks that format on external sites (`cross-origin-resource-policy: same-site`)
 
 2. **GitHub repo** — Place images in `images/vehicles/` and reference them as relative paths (e.g. `images/vehicles/ford-focus-2019.jpg`). Requires a code commit per new vehicle, so only worthwhile if images are already being handled in the repo.
 
