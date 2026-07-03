@@ -1,9 +1,17 @@
 # HANDOFF.md — Potters Bar Garage Website Modernisation
 
 **Original analysis date:** 15 May 2026  
-**Last updated:** 23 June 2026  
+**Last updated:** 3 July 2026  
 **Analyst:** Claude (Anthropic)  
 **Task:** Modernise pottersbargarage.co.uk as a static GitHub Pages site, then migrate to the live domain.
+
+---
+
+## ⚠️ HARD RULE: Never touch legacy/
+
+The `legacy/` directory is a read-only archive of the original WordPress site.
+**Do not modify, delete, overwrite, or run any find/replace/sed against any file under `legacy/` — ever.**
+If a task would affect `legacy/`, stop and confirm with the user explicitly.
 
 ---
 
