@@ -1,4 +1,4 @@
-# Potters Bar Garage — Modernised Website
+# Potters Bar Garage — Modernised and Simplified Website
 
 A static HTML/CSS replacement for [pottersbargarage.co.uk](https://pottersbargarage.co.uk), currently staging at [tarne75.github.io/pottersbargarage-alt](https://tarne75.github.io/pottersbargarage-alt/index.html).
 
