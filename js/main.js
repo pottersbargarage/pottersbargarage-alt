@@ -138,13 +138,31 @@ document.addEventListener('DOMContentLoaded', () => {
       const btn = contactForm.querySelector('button[type="submit"]');
       const originalHTML = btn.innerHTML;
 
+      // Validate reCAPTCHA before doing anything else
+      if (typeof grecaptcha !== 'undefined' && !grecaptcha.getResponse()) {
+        btn.textContent = 'Please tick the reCAPTCHA box first';
+        btn.style.background = '#b45309';
+        btn.style.opacity = '1';
+        setTimeout(() => {
+          btn.innerHTML = originalHTML;
+          btn.style.background = '';
+        }, 3000);
+        return;
+      }
+
       btn.textContent = 'Sending…';
       btn.disabled = true;
       btn.style.opacity = '.75';
 
+      // Build FormData and append reCAPTCHA token so Formspree can verify it
+      const formData = new FormData(contactForm);
+      if (typeof grecaptcha !== 'undefined') {
+        formData.append('g-recaptcha-response', grecaptcha.getResponse());
+      }
+
       fetch(contactForm.action, {
         method: 'POST',
-        body: new FormData(contactForm),
+        body: formData,
         headers: { 'Accept': 'application/json' }
       })
       .then(res => {
@@ -153,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
           btn.style.background = 'var(--green-mid)';
           btn.style.opacity = '1';
           contactForm.reset();
+          if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
           setTimeout(() => {
             btn.innerHTML = originalHTML;
             btn.style.background = '';
@@ -169,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.style.background = '#b91c1c';
         btn.style.opacity = '1';
         btn.disabled = false;
+        if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
         setTimeout(() => {
           btn.innerHTML = originalHTML;
           btn.style.background = '';
